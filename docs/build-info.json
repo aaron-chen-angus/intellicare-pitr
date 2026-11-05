@@ -1,5 +1,6 @@
 {
-  "release": "2026.11.05-atelier-2",
+  "release": "2026.11.05-restyle-integrated-1",
   "framework": "React + Vite (compiled production site)",
-  "features": ["short illustrated PITR reflection cues", "artist-confirmed scene details", "colour associations and estimated ink shares", "editable timestamped scene lanes and replay", "cancellable tiled WASM AI preview"]
+  "features": ["short illustrated PITR reflection cues", "artist-confirmed scene details", "colour associations and estimated ink shares", "editable timestamped scene lanes and replay", "report-integrated Anime, Realistic, Watercolour and Graphic Novel choices", "original drawing preloaded into style studio", "old local AI preview removed"],
+  "generation": "requires configured provider account and earned Quest-only credits; samples are not generated user results"
 }

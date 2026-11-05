@@ -1,8 +1,8 @@
 {
-  "release": "2026.11.05-restyle-prototype-1",
-  "route": "#/restyle",
-  "status": "standalone prototype; provider connection needs owner configuration",
+  "release": "2026.11.05-restyle-integrated-1",
+  "entry": "Report artwork Restyle drawing action and four report-visible style choices",
+  "optionalRoute": "#/restyle",
   "styles": ["Anime", "Realistic", "Watercolour", "Graphic Novel"],
-  "examples": "genuine pre-generated image edits, not live provider responses",
-  "provider": "Pollinations / flux.2-klein-4b; earned Quest-only credits enforced"
+  "examples": "style references only; never substituted for a user's generated result",
+  "provider": "Pollinations / flux.2-klein-4b; requires owner configuration and earned Quest-only credits"
 }
