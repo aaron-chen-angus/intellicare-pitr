@@ -1,0 +1,19 @@
+RELEASE: 2026.11.05-pages-fix-1
+
+This package is already compiled. Do NOT run npm or pnpm, and do NOT upload the ZIP itself.
+
+1. Extract this ZIP.
+2. Open https://github.com/aaron-chen-angus/intellicare-pitr
+3. Choose Add file -> Upload files. Drag the WHOLE docs folder into the upload area.
+4. Commit to main. The repository must now have docs/index.html and docs/assets/.
+5. Open Settings -> Pages -> Build and deployment.
+6. Choose Source: Deploy from a branch, Branch: main, Folder: /docs. Click Save.
+7. Wait for GitHub's Pages deployment to complete.
+8. Open https://aaron-chen-angus.github.io/intellicare-pitr/
+9. The strip at the top must say Release 2026.11.05-pages-fix-1.
+
+You can leave the old source files at the repository root. Selecting /docs makes GitHub serve the compiled docs/index.html instead of the unbuilt root index.html.
+
+Do not select GitHub Actions for this prebuilt alternative. If you prefer building from source using GitHub Actions, use the separate source package and repair guide instead.
+
+The optional AI model/runtime downloads from Hugging Face and jsDelivr, not from large files in this ZIP. Your drawing is processed locally. This is AI super-resolution, NOT generative style transfer. The large unused bundled runtime file is deliberately omitted from this browser-upload package; the shipped app loads its runtime from its pinned CDN URL. Offline first-run AI is not supported.
