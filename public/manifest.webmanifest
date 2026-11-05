@@ -1,0 +1,10 @@
+{
+  "name": "Rain & Me",
+  "short_name": "Rain & Me",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f6f1e9",
+  "theme_color": "#2e8c88",
+  "description": "A gentle reflective drawing activity in the rain.",
+  "icons": []
+}

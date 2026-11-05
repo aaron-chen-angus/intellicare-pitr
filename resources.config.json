@@ -1,0 +1,17 @@
+{
+  "region": "Singapore",
+  "support": [
+    {
+      "label": "Samaritans of Singapore (SOS)",
+      "detail": "24-hour hotline",
+      "value": "1767",
+      "href": "tel:1767"
+    },
+    {
+      "label": "Emergency services",
+      "detail": "If there is immediate danger",
+      "value": "995",
+      "href": "tel:995"
+    }
+  ]
+}

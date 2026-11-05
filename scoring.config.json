@@ -1,0 +1,27 @@
+{
+  "note": "heuristic weights — to be reviewed by a qualified art therapist/psychologist; these are not official validated PITR weights.",
+  "thresholds": {
+    "shelteredSteady": 4,
+    "findingYourFooting": 0,
+    "weatheringTheStorm": -4
+  },
+  "stressWeights": {
+    "heavyRain": 2,
+    "stormElements": 1,
+    "puddle": 1,
+    "raindropsTouchingPerson": 1,
+    "flooding": 2,
+    "smallFigure": 1,
+    "lowPageUsage": 1
+  },
+  "resourceWeights": {
+    "umbrella": 3,
+    "shelter": 2,
+    "raincoat": 1,
+    "boots": 1,
+    "company": 2,
+    "positiveDetail": 1,
+    "facialFeatures": 1,
+    "wholeFigure": 1
+  }
+}
