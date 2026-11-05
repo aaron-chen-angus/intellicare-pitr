@@ -1,19 +1,26 @@
-RELEASE: 2026.11.05-pages-fix-1
+RELEASE: 2026.11.05-atelier-2
 
-This package is already compiled. Do NOT run npm or pnpm, and do NOT upload the ZIP itself.
+THIS IS THE NEW COMPILED APP. Do not upload the ZIP itself; extract it first.
 
-1. Extract this ZIP.
-2. Open https://github.com/aaron-chen-angus/intellicare-pitr
-3. Choose Add file -> Upload files. Drag the WHOLE docs folder into the upload area.
-4. Commit to main. The repository must now have docs/index.html and docs/assets/.
-5. Open Settings -> Pages -> Build and deployment.
-6. Choose Source: Deploy from a branch, Branch: main, Folder: /docs. Click Save.
-7. Wait for GitHub's Pages deployment to complete.
-8. Open https://aaron-chen-angus.github.io/intellicare-pitr/
-9. The strip at the top must say Release 2026.11.05-pages-fix-1.
+1. Open https://github.com/aaron-chen-angus/intellicare-pitr
+2. Choose Add file -> Upload files.
+3. Drag the WHOLE docs folder from this package into the upload area.
+4. Commit to main. Same-named docs/index.html, docs/sw.js and docs/build-info.json must be replaced, and the NEW docs/assets files must be included.
+5. Keep your existing Settings -> Pages -> Deploy from a branch -> main -> /docs setting. No setting change is needed if you already selected /docs.
+6. Wait until the GitHub Pages deployment finishes successfully.
+7. Open https://aaron-chen-angus.github.io/intellicare-pitr/
+8. The top strip must read Release 2026.11.05-atelier-2. build-info.json at the live app root lists the same release.
 
-You can leave the old source files at the repository root. Selecting /docs makes GitHub serve the compiled docs/index.html instead of the unbuilt root index.html.
+Do not place docs inside docs. Do not upload src/main.tsx as the published entry. Do not omit assets/worker-*.js; it contains the new AI worker. Old hashed assets can remain until the new deployment works; the new index.html does not reference them.
 
-Do not select GitHub Actions for this prebuilt alternative. If you prefer building from source using GitHub Actions, use the separate source package and repair guide instead.
+What should change:
+- Short illustrated PITR cards and Describe your drawing controls.
+- Named colour meanings and a proportional estimated-ink bar.
+- Drawing focus labels, measured element timelines and replay.
+- Cancellable, memory-safe local AI preview with Quick mode as default.
 
-The optional AI model/runtime downloads from Hugging Face and jsDelivr, not from large files in this ZIP. Your drawing is processed locally. This is AI super-resolution, NOT generative style transfer. The large unused bundled runtime file is deliberately omitted from this browser-upload package; the shipped app loads its runtime from its pinned CDN URL. Offline first-run AI is not supported.
+AI downloads its free model/runtime from Hugging Face and jsDelivr on first use. Your drawing is not uploaded. This is super-resolution of a SMALL PREVIEW, not generative artistic restyling or full-resolution enhancement. First-use download/inference can take several minutes. Original and AI preview remain separate; download the full-size original at any time.
+
+The larger unused bundled runtime and source maps are omitted from this browser-upload package. All supplied files fit GitHub's browser-upload limit. This compiled package was tested at /intellicare-pitr/.
+
+For development or source-based GitHub Actions deployment, use the separate complete source ZIP instead. Do not mix /docs branch deployment with source-only root publishing.
