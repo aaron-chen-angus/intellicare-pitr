@@ -1,6 +1,8 @@
 {
-  "release": "2026.11.05-restyle-integrated-1",
+  "release": "2026.11.13-scrapbook-1",
+  "design": "artist's scrapbook: original cut-paper illustration, warm paper, berry and forest accents, locally bundled DM Serif Display, DM Sans and Caveat fonts",
   "framework": "React + Vite (compiled production site)",
   "features": ["short illustrated PITR reflection cues", "artist-confirmed scene details", "colour associations and estimated ink shares", "editable timestamped scene lanes and replay", "report-integrated Anime, Realistic, Watercolour and Graphic Novel choices", "original drawing preloaded into style studio", "old local AI preview removed"],
-  "generation": "requires configured provider account and earned Quest-only credits; samples are not generated user results"
+  "generation": "requires configured provider account and earned Quest-only credits; samples are not generated user results",
+  "connection": "shows the provider Quest pollen only consent requirement and checks the grant before accepting connection; paid-capable keys remain blocked before every drawing upload"
 }
