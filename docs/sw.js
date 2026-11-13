@@ -1,6 +1,6 @@
 // App caches are isolated by Pages subpath; never remove another site's caches.
 const PREFIX = `rainandme:${new URL(self.registration.scope).pathname}:`
-const CACHE = `${PREFIX}2026.11.13-interactive-1`
+const CACHE = `${PREFIX}2026.11.13-report-1`
 
 self.addEventListener('install', () => self.skipWaiting())
 self.addEventListener('activate', (event) => {

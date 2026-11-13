@@ -1,15 +1,1 @@
-REPORT-INTEGRATED ARTISTIC RESTYLING — 2026.11.05-restyle-integrated-1
-
-This update replaces the old report AI preview. It is not the earlier standalone prototype ZIP.
-
-1. Extract this ZIP.
-2. Open the GitHub repository aaron-chen-angus/intellicare-pitr AT ITS ROOT.
-3. Add file → Upload files. Drag the complete extracted docs folder into GitHub. Replace matching files and commit to main. Keep docs/assets and docs/restyle inside docs. Never make docs/docs; never upload only pictures or index.html.
-4. Keep Settings → Pages → Deploy from a branch → main → /docs.
-5. Wait for Pages deployment success, then open the NORMAL site root:
-   https://aaron-chen-angus.github.io/intellicare-pitr/
-6. Complete a drawing. Confirm release 2026.11.05-restyle-integrated-1. The report shows Anime, Realistic, Watercolour and Graphic Novel choices and a Restyle drawing button. The old AI preview/Enhance with AI controls are gone. Selecting a style loads your actual original into the studio automatically.
-
-Live generation still requires a public Pollinations App Key in docs/restyle.config.json and a user-authorised Quest-only key with earned credits. The verified live appKey was empty; it has not been invented or replaced with a secret. Never put sk_ secrets in GitHub. Style pictures are explicitly labelled examples, not generated versions of your drawing.
-
-See RESTYLE-INTEGRATED-UPDATE.md for details. This ZIP has been compiled and checked; it does not upload itself to your repository.
+Extract this ZIP. Open your existing GitHub intellicare-pitr repository docs folder. Add file → Upload files; upload the CONTENTS of extracted docs into existing docs. Commit and wait for Pages deployment. Do not delete existing docs or nest docs/docs. Keep current restyle.config.json and restyle images: intentionally not included. Verify2026.11.13-report-1release. At the end of the submitted drawing report click Download reflection report PDF. The sample PDF delivered separately uses a QA test drawing, not realclinicaldata.

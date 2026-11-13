@@ -1,8 +1,20 @@
 {
-  "release": "2026.11.13-interactive-1",
+  "release": "2026.11.13-report-1",
   "design": "artist's scrapbook: original cut-paper illustration, warm paper, berry and forest accents, locally bundled DM Serif Display, DM Sans and Caveat fonts",
   "framework": "React + Vite (compiled production site)",
-  "features": ["six independent scene confirmations with figure-size and page-position controls", "region AND timestamp bulk labels with label-only undo", "editable timestamped scene lanes and replay", "personal feeling word clouds and drawing-colour matching", "available-support map and concrete when/then plan", "local keepsake PNG and structured choice JSON", "report-integrated Anime, Realistic, Watercolour and Graphic Novel choices", "original drawing preloaded into style studio", "old local AI preview removed"],
+  "features": [
+    "six independent scene confirmations with figure-size and page-position controls",
+    "region AND timestamp bulk labels with label-only undo",
+    "editable timestamped scene lanes and replay",
+    "personal feeling word clouds and drawing-colour matching",
+    "available-support map and concrete when/then plan",
+    "local keepsake PNG and structured choice JSON",
+    "report-integrated Anime, Realistic, Watercolour and Graphic Novel choices",
+    "original drawing preloaded into style studio",
+    "old local AI preview removed"
+  ],
   "generation": "requires configured provider account and earned Quest-only credits; samples are not generated user results",
-  "connection": "shows the provider Quest pollen only consent requirement and checks the grant before accepting connection; paid-capable keys remain blocked before every drawing upload"
+  "connection": "shows the provider Quest pollen only consent requirement and checks the grant before accepting connection; paid-capable keys remain blocked before every drawing upload",
+  "report": "local designed PDF: original drawing, confirmed scene, measured pen-time shares, actual selected outcomes and plan; not a medical diagnosis",
+  "process": "retained non-eraser active-time shares include unlabelled strokes; fills excluded; sequence and returns are descriptive only"
 }
