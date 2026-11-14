@@ -1,0 +1,17 @@
+# Premium reflection report QA
+
+Release: **2026.11.13-report-2**. This is a local PDF/export update, not a live GitHub Pages deployment.
+
+The compiled app was exercised through its saved-drawing, submit, real report, style studio and PDF download controls. Provider authorization and editing replies were explicit QA doubles; no live generation, provider balance spending or purchase occurred. The generated JPEG test result was applied using **Use this artwork in report**. With the **Original** tab selected, the PDF contained both the unchanged original and applied Anime artwork. Extracting the PDF images and comparing decoded RGB pixels confirmed the identity of both images. Selecting the Anime tab also exported both. Recorded original process text stayed unchanged.
+
+The original-only export explicitly says **No styled artwork applied** and never substitutes a sample. Actual completed choices, six confirmed scene values, personal colour links and the chosen water action remain in selectable PDF text. Existing edge checks passed incomplete and empty records, latest in-memory choices when storage is blocked, safe Unicode/long-title rendering, and a failed lazy-loaded export module that shows an error and permits retry. The renderer also rejects bad supplied styled data instead of silently omitting it.
+
+Six-page premium editorial layout uses embedded licensed serif/sans fonts, restrained warm paper/deep teal/brass, paired aspect-fit image mats, aligned scene tables, measured active-time shares/timeline, personal choices/action, evidence/care and all original nine references. Visual review found and corrected a divider too close to the following guidance row. Small positive durations no longer display a false `0.0 s`; rounding is declared alongside shares. Scene and measurement content still comes from original records, never generated pixels. Feelings and colour connections remain self-reported, not diagnostic scores.
+
+The provided sample uses existing original/Anime example art with explicitly synthetic records and choices. It is an illustrative design preview, not the user's missing generated image or a clinical case. The sample uses the same renderer source; actual compiled-app behavior is verified separately through its download button.
+
+Protected original canvas, storage, engine, process and activity helpers, scene confirmations, restyle/provider modules, original references and public owner configuration remained byte-identical to the saved baseline. The compiled update overlay omits `restyle.config.json` and unchanged restyle sample images, so users must overlay it into their existing `docs` rather than delete that folder.
+
+## Final verification — November 14
+
+The exact compiled `rainandme-premium-report-update/docs` overlay passed the paired-artwork app/download test after the final spacing and duration corrections. The resulting PDF has six A4 pages and contains both extracted, pixel-matching artworks from either display tab. All six illustrative sample pages were visually reviewed, and the final guidance/process pages were re-rendered to confirm dividers no longer intersect text and a recorded 0.02-second interval stays visible. A targeted read-only audit found no confirmed blocking issues in the original/styled input path, record-only analysis, error handling or local download boundary. Final archives are byte-verified against their source files; no owner/provider configuration is included in the overlay or complete source archive.

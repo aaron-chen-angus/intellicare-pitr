@@ -1,5 +1,5 @@
 {
-  "release": "2026.11.13-report-1",
+  "release": "2026.11.13-report-2",
   "design": "artist's scrapbook: original cut-paper illustration, warm paper, berry and forest accents, locally bundled DM Serif Display, DM Sans and Caveat fonts",
   "framework": "React + Vite (compiled production site)",
   "features": [
@@ -16,5 +16,12 @@
   "generation": "requires configured provider account and earned Quest-only credits; samples are not generated user results",
   "connection": "shows the provider Quest pollen only consent requirement and checks the grant before accepting connection; paid-capable keys remain blocked before every drawing upload",
   "report": "local designed PDF: original drawing, confirmed scene, measured pen-time shares, actual selected outcomes and plan; not a medical diagnosis",
-  "process": "retained non-eraser active-time shares include unlabelled strokes; fills excluded; sequence and returns are descriptive only"
+  "process": "retained non-eraser active-time shares include unlabelled strokes; fills excluded; sequence and returns are descriptive only",
+  "premiumReport": {
+    "pairedArtwork": true,
+    "appliedStyleOnly": true,
+    "analysisSource": "original retained records",
+    "presentation": "premium editorial",
+    "offlineExport": true
+  }
 }

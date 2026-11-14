@@ -1,5 +1,5 @@
 {
-  "release": "2026.11.13-report-1",
+  "release": "2026.11.13-report-2",
   "entry": "Report artwork Restyle drawing action and four report-visible style choices",
   "optionalRoute": "#/restyle",
   "styles": [
