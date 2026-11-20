@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight, Check, Download, ImagePlus, LoaderCircle, Maximize2, Palette, ShieldCheck, Sparkles, Unplug, X } from 'lucide-react'
 import { STYLES, buildRestylePrompt, type RestyleStyleId, type RestyleMode } from './styles'
 import { restyleImage } from './client'
@@ -218,7 +218,7 @@ export default function StyleLab({ initialDrawing, initialStyleId = 'anime', onU
     const extension = result?.mimeType === 'image/webp' ? 'webp' : result?.mimeType === 'image/jpeg' ? 'jpg' : 'png'
     const anchor = document.createElement('a')
     anchor.href = isExample ? asset(`${styleId}.png`) : styledUrl
-    anchor.download = `rain-and-me-${displayedStyle.id}${isExample ? '-sample' : ''}.${extension}`
+    anchor.download = `intelliCARE-pitr-${displayedStyle.id}${isExample ? '-sample' : ''}.${extension}`
     document.body.appendChild(anchor)
     anchor.click()
     anchor.remove()
@@ -228,7 +228,7 @@ export default function StyleLab({ initialDrawing, initialStyleId = 'anime', onU
     <main className="restyle-lab">
       <div className="restyle-shell">
         <header className="restyle-nav">
-          {onExit ? <button type="button" className="restyle-inline-link" onClick={exit}><ArrowLeft size={17} aria-hidden="true" /> Back to your report</button> : <a href="./" className="restyle-back"><ArrowLeft size={17} aria-hidden="true" /> Back to Rain &amp; Me</a>}
+          {onExit ? <button type="button" className="restyle-inline-link" onClick={exit}><ArrowLeft size={17} aria-hidden="true" /> Back to your report</button> : <a href="./" className="restyle-back"><ArrowLeft size={17} aria-hidden="true" /> Back to the gallery</a>}
           <span className="restyle-wordmark"><Palette size={19} aria-hidden="true" /> The art-style studio</span>
           <span className="restyle-nav-note">A little room to reimagine.</span>
         </header>
@@ -352,7 +352,7 @@ export default function StyleLab({ initialDrawing, initialStyleId = 'anime', onU
           </div>
         </section>
 
-        <footer className="restyle-page-footer"><span>Rain &amp; Me <span aria-hidden="true">/</span> The art-style studio</span><p>New art, not an interpretation of you.</p></footer>
+        <footer className="restyle-page-footer"><span>intelliCARE <span aria-hidden="true">/</span> The art-style studio</span><p>New art, not an interpretation of you.</p></footer>
       </div>
       {enlarged && <dialog ref={dialog} className="restyle-enlarged" aria-labelledby="restyle-enlarged-title" onCancel={() => setEnlarged(null)} onClose={() => setEnlarged(null)}>
         <div className="restyle-enlarged-toolbar"><h2 id="restyle-enlarged-title">{enlarged === 'original' ? 'Original drawing' : `${displayedStyle.name}${isExample ? ' sample' : ' artwork'}`}</h2><button type="button" className="restyle-icon-button" aria-label="Close enlarged artwork" autoFocus onClick={() => setEnlarged(null)}><X size={22} aria-hidden="true" /></button></div>

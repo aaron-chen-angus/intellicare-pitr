@@ -12,8 +12,10 @@ import { APP_RELEASE } from './version'
 import './report/report-export.css'
 import type { LabelSnapshot } from './report/bulk-selection'
 import ReportRestyle from './restyle/ReportRestyle'
-import ScrapbookArt from './ScrapbookArt'
-import { GameHud, ReportRewards, TOOL_ICONS } from './GameHud'
+import { TOOL_ICONS } from './GameHud'
+import Gallery, { ROOMS, type RoomId, type RoomInfo } from './gallery/Gallery'
+import { Guide, Sky } from './gallery/Guide'
+import { Delvina } from './gallery/characters'
 import { STYLES, type RestyleStyleId } from './restyle/styles'
 import {
   ArrowLeft,
@@ -21,11 +23,9 @@ import {
   ChevronDown,
   CloudRain,
   Download,
-  Droplets,
   FileText,
   HelpCircle,
   Maximize2,
-  Moon,
   Palette,
   Pipette,
   Redo2,
@@ -35,7 +35,6 @@ import {
   Share2,
   ShieldCheck,
   Sparkles,
-  Sun,
   Timer,
   Undo2,
   Volume2,
@@ -77,6 +76,15 @@ import type {
 
 const SESSION_KEY = 'rain-and-me-session-v1'
 const GALLERY_KEY = 'rain-and-me-gallery-v1'
+
+// Guidance only; Miss Delvina never interprets the drawing.
+const STUDIO_TIPS = [
+  'Take your time. There is no right or wrong way to draw a person in the rain.',
+  'Tip: choose a Drawing focus (Person, Umbrella, Rain) before you draw that part. Your timeline will be more accurate.',
+  'Try Watercolour for soft rain, or Ink for crisp lines. Undo is always there if you change your mind.',
+  'Hold Shift or use two fingers to move the paper. Scroll or pinch to zoom.',
+  'Tap Submit whenever you feel finished. When the timer ends, your drawing is collected for you.',
+]
 
 const blankProfile: SessionProfile = { name: '', ageGroup: 'adult', consent: false }
 
@@ -122,7 +130,9 @@ function App() {
   const [size, setSize] = useState(12)
   const [opacity, setOpacity] = useState(78)
   const [soundOn, setSoundOn] = useState(true)
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const [room, setRoom] = useState<RoomId | null>(null)
+  const [tipsHidden, setTipsHidden] = useState(false)
+  const hideTips = useCallback(() => setTipsHidden(true), [])
   const [panelOpen, setPanelOpen] = useState(false)
   const [zoom, setZoom] = useState(1)
   const [pan, setPan] = useState({ x: 0, y: 0 })
@@ -282,11 +292,8 @@ function App() {
   }, [soundOn])
 
   useEffect(() => {
-    const savedTheme = browserStorage.getItem('rain-and-me-theme-v1')
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const nextTheme = savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : prefersDark ? 'dark' : 'light'
-    setTheme(nextTheme)
-    document.documentElement.dataset.theme = nextTheme
+    // Light only, matching intelliCARE Home Scan.
+    document.documentElement.dataset.theme = 'light'
     const raw = browserStorage.getItem(SESSION_KEY)
     const saved = parseSession(raw)
     if (saved && !saved.submitted && Date.now() - saved.startTime < DRAWING_SECONDS * 1000) setRestoreAvailable(true)
@@ -297,10 +304,6 @@ function App() {
     }
   }, [])
 
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme
-    browserStorage.setItem('rain-and-me-theme-v1', theme)
-  }, [theme])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -367,6 +370,7 @@ function App() {
     setBeautifiedDataUrl('')
     setRestoreAvailable(false)
     setDrawingSubject('unlabelled')
+    setRoom(null)
     setScreen('studio')
     lastCueRef.current = DRAWING_SECONDS
     const persisted = browserStorage.setItem(SESSION_KEY, JSON.stringify({ profile, startTime: nextStart, drawingDataUrl: '', strokes: [], fillOps: [], undoCount: 0 }))
@@ -592,7 +596,7 @@ function App() {
       }
       const { createReflectionPdf } = await import('./report/reflection-pdf')
       const pdf = await createReflectionPdf(snapshot)
-      pdf.save('rain-and-me-reflection-report.pdf')
+      pdf.save('intelliCARE – Person in the Rain Activity.pdf')
       showToast('Your reflection report download is ready.')
     } catch (error) {
       setPdfError(error instanceof Error ? `Report could not be prepared: ${error.message}` : 'Report could not be prepared. Please retry; your drawing is unchanged.')
@@ -607,7 +611,7 @@ function App() {
     try {
       const blob = await (await fetch(data)).blob()
       const file = new File([blob], `${profile.name || 'my'}-rain-art.png`, { type: 'image/png' })
-      if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) await navigator.share({ files: [file], title: "Rain & Me artwork" })
+      if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) await navigator.share({ files: [file], title: `${APP_NAME} artwork` })
       else exportPng()
     } catch {
       exportPng()
@@ -622,6 +626,7 @@ function App() {
   }
 
   const drawAgain = () => {
+    setRoom(null)
     setRestyledArtwork(null)
     setRestyleOpenRequest(0)
     setArtView('original')
@@ -641,32 +646,53 @@ function App() {
   const reportDate = useMemo(() => new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date()), [])
   const displayedArtwork = chosenArtwork()
 
-  if (screen === 'welcome') return (
+  const brand = (label: string) => (
+    <a className="wordmark brand" href="./" aria-label={label}>
+      <span className="mark"><Palette size={22} /></span>
+      <span className="brand-text"><b>intelli<span>CARE</span></b><small>Person in the Rain Activity</small></span>
+    </a>
+  )
+  const firstName = profile.name.trim()
+  const activeRoom = ROOMS.find((item) => item.id === room) ?? null
+  const nextRoom = () => {
+    const index = activeRoom ? ROOMS.indexOf(activeRoom) : -1
+    setRoom(ROOMS[(index + 1) % ROOMS.length].id)
+  }
+  const goToPass = () => {
+    const field = document.getElementById('gallery-pass-name')
+    field?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    field?.focus({ preventScroll: true })
+  }
+  const pickReportRoom = (info: RoomInfo) => {
+    setRoom(info.id)
+    document.getElementById(info.target)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  if (screen === 'welcome') {
+    const welcomeLines = activeRoom ? [activeRoom.welcome] : [
+      `Hello${firstName ? `, ${firstName}` : ''}! I'm Miss Delvina See, your art therapist today. Welcome to the intelliCARE Art Gallery.`,
+      'Today you will draw a person in the rain, then we will look at it together. Tap any room in the gallery to see what happens there.',
+      'Whenever you are ready, fill in your gallery pass and step into the Drawing Studio.',
+    ]
+    return (
     <div className="app-shell">
-      <div className="ambient-wash" />
-      <div className="rain-field" />
+      <Sky />
       <main className="welcome-page">
         <header className="top-nav">
-          <a className="wordmark" href="./" aria-label="Rain & Me home"><span className="mark"><CloudRain size={22} /></span><span>Rain & Me</span></a>
+          {brand('intelliCARE Person in the Rain Activity home')}
           <div className="nav-actions">
-            <button className="icon-button" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} aria-label="Toggle dark mode">{theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}</button>
             <button className="icon-button" onClick={() => setShowSupport(!showSupport)} aria-label="Show support resources"><HelpCircle size={18} /></button>
           </div>
         </header>
         <section className="hero">
           <div className="hero-copy">
-            <div className="eyebrow">A quiet rain-room for making</div>
-            <h1 className="display-title">Every storm has <em>a story.</em></h1>
+            <div className="eyebrow">intelliCARE · Art therapy activity</div>
+            <h1 className="display-title">Person in the Rain <em>Activity</em></h1>
             <p className="lede">Draw a person in the rain, then take a little longer with what you made. There is no right or wrong way to fill the page.</p>
-            <ol className="quest-strip" aria-label="How it works">
-              <li><span className="quest-icon"><Palette size={18} /></span><b>Draw</b><small>5 minute quest</small></li>
-              <li><span className="quest-icon"><Sparkles size={18} /></span><b>Reflect</b><small>Notice the story</small></li>
-              <li><span className="quest-icon"><Save size={18} /></span><b>Keep</b><small>Restyle &amp; save</small></li>
-            </ol>
             <div className="instruction-card"><div className="instruction-icon"><Timer size={18} /></div><p>Draw a person in the rain. You have 5 minutes. There&apos;s no right or wrong — just draw whatever comes to mind. Tap Submit when you&apos;re done; when time runs out, your drawing will be submitted automatically.</p></div>
             <div className="profile-card">
               <div className="profile-grid">
-                <label className="field-label">Name or nickname <input className="text-input" value={profile.name} onChange={(event) => setProfile({ ...profile, name: event.target.value })} placeholder="Optional" /></label>
+                <label className="field-label">Name or nickname <input id="gallery-pass-name" className="text-input" value={profile.name} onChange={(event) => setProfile({ ...profile, name: event.target.value })} placeholder="Optional" /></label>
                 <label className="field-label">Age group <select className="select-input" value={profile.ageGroup} onChange={(event) => setProfile({ ...profile, ageGroup: event.target.value as AgeGroup })}><option value="child">{ageLabel.child}</option><option value="teen">{ageLabel.teen}</option><option value="adult">{ageLabel.adult}</option><option value="older">{ageLabel.older}</option></select></label>
               </div>
               <label className="consent" style={{ marginTop: 17 }}><input type="checkbox" checked={profile.consent} onChange={(event) => setProfile({ ...profile, consent: event.target.checked })} /><span>I understand this is a reflective art activity, not a psychological diagnosis.</span></label>
@@ -678,18 +704,31 @@ function App() {
             </div>
             {showSupport && <div className="support-box" style={{ marginTop: 14 }}><div><strong>Need support?</strong><span style={{ color: 'var(--muted)', fontSize: '.82rem' }}>Singapore resources are here if the weather feels heavy.</span></div><a className="support-link" href="tel:1767">SOS 24-hour · 1767</a><a className="support-link" href="tel:995">Emergency · 995</a></div>}
           </div>
-          <ScrapbookArt />
+          <div className="hero-stage">
+            <Gallery mode="welcome" active={room} onSelect={(info) => setRoom(info.id)} />
+            <ol className="steps" aria-label="The five rooms of the activity">
+              {ROOMS.map((info) => <li key={info.id}><button type="button" aria-pressed={room === info.id} onClick={() => setRoom(info.id)}><b>{info.step}</b>{info.name}</button></li>)}
+            </ol>
+            <Guide
+              lines={welcomeLines}
+              actions={activeRoom && <>
+                {activeRoom.id === 'studio' && <button type="button" className="primary-button" onClick={goToPass}>Get my gallery pass <Send size={14} /></button>}
+                <button type="button" className="ghost-button" onClick={nextRoom}>Next room</button>
+              </>}
+            />
+          </div>
         </section>
-        <footer className="scrapbook-footer"><p>A page for your weather. A little space for you.</p><span>01 · make / 02 · notice / 03 · keep</span></footer>
+        <footer className="welcome-footer"><span>intelliCARE · Person in the Rain Activity</span><span>A reflective art activity, not a psychological test or diagnosis.</span></footer>
       </main>
       {toast && <div className="toast">{toast}</div>}
     </div>
-  )
+    )
+  }
 
   if (screen === 'studio') return (
     <div className={`studio-shell ${panelOpen ? 'panel-open' : ''}`}>
       <header className="studio-topbar">
-        <a className="wordmark" href="./" aria-label="Back to welcome"><span className="mark"><CloudRain size={20} /></span><span>Rain & Me</span></a>
+        {brand('Back to the gallery entrance')}
         <div className="timer-block" aria-live="polite"><div className="timer" style={{ color: timerTone }}>{formatTime(remaining)}</div><div className="timer-meta">real-time weather window</div><div className="timer-bar"><span style={{ width: `${completionPercent}%`, background: timerTone }} /></div></div>
         <div className="studio-submit"><button className="icon-button" onClick={() => setSoundOn(!soundOn)} aria-label={soundOn ? 'Turn sound off' : 'Turn sound on'}>{soundOn ? <Volume2 size={17} /> : <VolumeX size={17} />}</button><button className="primary-button" onClick={requestSubmit}><Check size={16} /> <span className="submit-label">Submit</span></button></div>
       </header>
@@ -703,7 +742,6 @@ function App() {
       </aside>
       <section className="canvas-zone">
         <div className="focus-ribbon"><label>Drawing focus <select aria-label="Drawing focus" value={drawingSubject} onChange={(e) => setDrawingSubject(e.target.value as DrawingSubject)}>{SUBJECTS.map((subject) => <option key={subject.id} value={subject.id}>{subject.label}</option>)}</select></label><p>Optional: name what you are drawing to get an accurate element timeline. You can correct labels after submission.</p></div>
-        <GameHud strokes={strokes} fills={fillOps} />
         <div className="paper-wrap">
           <div className="paper-shell">
             <div className="canvas-holder" ref={holderRef} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={endPointer} onPointerCancel={endPointer} onPointerLeave={() => setBrushCursor((current) => ({ ...current, visible: false }))} onWheel={(event) => { event.preventDefault(); setZoom((value) => clamp(value + (event.deltaY > 0 ? -.08 : .08), .65, 2.6)) }}>
@@ -714,8 +752,11 @@ function App() {
           </div>
         </div>
         <aside className={`controls-panel ${panelOpen ? 'open' : ''}`} aria-label="Art controls">
+          {tipsHidden
+            ? <button type="button" className="guide-show" onClick={() => setTipsHidden(false)}><Delvina crop /> Show Miss Delvina&apos;s tips</button>
+            : <Guide compact lines={STUDIO_TIPS} onDismiss={hideTips} />}
           <div className="panel-heading"><div><div className="mini-label">Studio controls</div><h2>Make a mark</h2></div><button className="icon-button" onClick={() => setPanelOpen(false)} aria-label="Close controls"><ChevronDown size={17} /></button></div>
-          <div className="control-section"><div className="tool-summary"><span style={{ fontSize: '1.35rem' }}>{selectedToolMeta?.glyph}</span><span><strong>{selectedToolMeta?.label}</strong><br /><small>{selectedToolMeta?.hint}</small></span></div><div className="range-row"><div><span>Size</span><span>{size}px</span></div><input type="range" min="1" max="80" value={size} onChange={(event) => setSize(Number(event.target.value))} /></div><div className="range-row"><div><span>Opacity</span><span>{opacity}%</span></div><input type="range" min="5" max="100" value={opacity} onChange={(event) => setOpacity(Number(event.target.value))} /></div></div>
+          <div className="control-section"><div className="tool-summary"><span aria-hidden="true">{(() => { const ToolIcon = TOOL_ICONS[selectedTool]; return <ToolIcon size={24} /> })()}</span><span><strong>{selectedToolMeta?.label}</strong><br /><small>{selectedToolMeta?.hint}</small></span></div><div className="range-row"><div><span>Size</span><span>{size}px</span></div><input type="range" min="1" max="80" value={size} onChange={(event) => setSize(Number(event.target.value))} /></div><div className="range-row"><div><span>Opacity</span><span>{opacity}%</span></div><input type="range" min="5" max="100" value={opacity} onChange={(event) => setOpacity(Number(event.target.value))} /></div></div>
           <div className="control-section"><div className="panel-heading"><span className="mini-label">Colour palette</span><button className="text-button" onClick={() => { eyedropperRef.current = true; showToast('Tap the paper to pick a colour.') }}><Pipette size={14} /> pick</button></div><div className="palette-grid">{palette.map((swatch) => <button key={swatch} className={`swatch ${color === swatch ? 'selected' : ''}`} style={{ background: swatch }} onClick={() => setPickedColor(swatch)} aria-label={`Choose ${swatch}`} />)}</div><div className="recent-row">{recentColors.map((swatch) => <button key={swatch} className="swatch" style={{ background: swatch }} onClick={() => setPickedColor(swatch)} aria-label={`Use recent ${swatch}`} />)}<label className="swatch" style={{ background: color, position: 'relative', overflow: 'hidden' }} aria-label="Custom color"><input type="color" value={color} onChange={(event) => setPickedColor(event.target.value)} style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} /></label></div></div>
           <div className="control-section"><div className="mini-label">View</div><div className="action-grid" style={{ marginTop: 11 }}><button className="small-button" onClick={() => setZoom((value) => clamp(value - .12, .65, 2.6))}><ZoomOut size={15} /> Zoom out</button><button className="small-button" onClick={() => setZoom((value) => clamp(value + .12, .65, 2.6))}><ZoomIn size={15} /> Zoom in</button><button className="small-button" onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }) }}><Maximize2 size={15} /> Fit paper</button><button className="small-button" onClick={() => { eyedropperRef.current = true; showToast('Tap the paper to sample.') }}><Pipette size={15} /> Eyedropper</button></div><p className="helper-note">Tip: hold Shift or the middle mouse button to pan. The canvas also responds to trackpad or mouse-wheel zoom.</p></div>
           <div className="control-section"><div className="mini-label">A quiet reminder</div><p className="helper-note" style={{ fontSize: '.9rem', marginTop: 8 }}>There is no right or wrong. Let your hand decide where the rain goes.</p></div>
@@ -727,36 +768,56 @@ function App() {
     </div>
   )
 
-  if (screen === 'developing') return <div className="loading-screen"><div className="ambient-wash" /><div className="loading-card"><div className="drop-bloom"><i /><i /><i /></div><div className="eyebrow">Developing your artwork</div><h1>{developingMessages[developingIndex]}</h1><p>Taking a gentle, exploratory look at the marks you chose.</p></div></div>
+  if (screen === 'developing') return <div className="loading-screen"><Sky /><div className="loading-card"><Delvina /><div className="eyebrow">Hanging your artwork in the gallery</div><h1>{developingMessages[developingIndex]}</h1><p>Miss Delvina is preparing the Reflection Lounge. This takes a few seconds.</p><div className="drop-bloom"><i /><i /><i /></div></div></div>
 
   if (!report) return null
   const supportFirst = report.supportFirst
   const title = profile.name ? `${profile.name}'s Rain` : 'Your Rain'
   return (
     <div className="app-shell">
-      <div className="ambient-wash" />
-      <div className="rain-field" />
+      <Sky />
       <main className="report-page">
-        <header className="top-nav"><a className="wordmark" href="./" aria-label="Rain & Me home"><span className="mark"><CloudRain size={22} /></span><span>Rain & Me</span></a><div className="nav-actions"><button className="icon-button" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} aria-label="Toggle dark mode">{theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}</button></div></header>
-        <section className="report-header"><div><div className="eyebrow">A small reflection, not a verdict</div><h1>Take a little longer<br />with what you made.</h1></div><p>Meet the character, name the weather, and notice what offers protection. Use the short cues below as conversation starters—not conclusions about you.</p></section>
+        <header className="top-nav">{brand('intelliCARE Person in the Rain Activity home')}</header>
+        <section className="report-header report-hero">
+          <div className="report-hero-copy">
+            <div className="eyebrow">A small reflection, not a verdict</div>
+            <h1>Take a little longer with what you made.</h1>
+            <p className="report-lede">Meet the character, name the weather, and notice what offers protection. Use the short cues below as conversation starters, not conclusions about you.</p>
+            <Guide
+              lines={activeRoom ? [activeRoom.report] : [
+                `Thank you${firstName ? `, ${firstName}` : ''}. Your painting is now hanging in the gallery.`,
+                'Let us walk through it together, one room at a time. Tap a room on the gallery map to jump there.',
+                'Remember, this is a reflection, not a verdict. The meaning of your picture is yours.',
+              ]}
+              actions={activeRoom && <button type="button" className="ghost-button" onClick={() => {
+                const next = ROOMS[(ROOMS.indexOf(activeRoom) + 1) % ROOMS.length]
+                pickReportRoom(next)
+              }}>Next room</button>}
+            />
+          </div>
+          <div className="report-hero-map"><Gallery mode="report" active={room} onSelect={pickReportRoom} /></div>
+        </section>
         {supportFirst && <div className="paper-card disclaimer" style={{ marginBottom: 18 }}><h2>First, a little support</h2><p>The page carries a lot of weather and no clear shelter shape. That is not a diagnosis or a judgement. If the drawing reflects how you feel right now, consider reaching out to someone you trust or a professional.</p><div className="support-box" style={{ marginTop: 15 }}><a className="support-link" href="tel:1767">SOS 24-hour hotline · 1767</a><a className="support-link" href="tel:995">Emergency services · 995</a></div></div>}
         <div className="report-grid">
           <figure className="artwork-card"><img src={displayedArtwork} alt={artView === 'restyle' ? 'Your AI-restyled artwork; original retained separately' : 'Your person-in-the-rain artwork'} /><figcaption className="artwork-caption"><strong>{title}</strong><span>{reportDate}</span></figcaption><div className="art-comparison"><button aria-pressed={artView === 'original'} onClick={() => setArtView('original')}>Original</button>{restyledArtwork && <button aria-pressed={artView === 'restyle'} onClick={() => setArtView('restyle')}>{STYLES.find((style) => style.id === restyledArtwork.styleId)?.name} version</button>}{beautifiedDataUrl && <button aria-pressed={artView === 'finish'} onClick={() => setArtView('finish')}>Gallery finish</button>}</div><button className="art-original-link" onClick={() => setRestyleOpenRequest((value) => value + 1)}><Sparkles size={15} /> Restyle drawing</button><button className="art-original-link" onClick={() => exportPng(true)}>Download full-size original</button></figure>
           <div className="report-stack">
             <section className="weather-card"><div className="weather-card-top"><div><div className="eyebrow eyebrow-on-dark">Your reflection notebook</div><h2>A story, not a score</h2><p>Short cues. Your meaning. One small next step.</p></div><div className="weather-icon"><CloudRain size={38} /></div></div></section>
-            <ReportRewards strokes={strokes} fills={fillOps} timeUsedSeconds={report.timeUsedSeconds} />
             <ReportRestyle drawingDataUrl={drawingDataUrl} title={title} openRequest={restyleOpenRequest} onUse={applyArtisticRestyle} />
-            <ReflectionCards scene={scene} onChange={setScene} />
-            <SceneSummary scene={scene} />
+            <div id="report-reflect" className="report-anchor report-stack">
+              <ReflectionCards scene={scene} onChange={setScene} />
+              <SceneSummary scene={scene} />
+            </div>
             {report.blank && <section className="paper-card"><h2>A small first sketch</h2><p>The local reader cannot confirm a person from these marks. You can still describe your picture above and use the reflection cues—or draw again.</p></section>}
-            <PaletteStory entries={paletteUsage(strokes)} />
-            {fillOps.length > 0 && <div className="fill-colours"><span>Also used in fills (area not measured):</span>{Array.from(new Set(fillOps.map((f) => f.color))).map((colour) => <span key={colour}><i style={{ background: colour, display: 'inline-block', verticalAlign: 'middle' }} /> {colour}</span>)}</div>}
-            <ProcessStory strokes={strokes} fills={fillOps} startTime={startTime} timeUsedSeconds={report.timeUsedSeconds} undoCount={undoCount} onRelabelMany={labelSelectedMarks} onRestoreLabels={restoreMarkLabels} onRelabel={(id, subject) => setStrokes((current) => current.map((stroke) => stroke.id === id ? { ...stroke, subject } : stroke))} onRelabelFill={(index, subject) => setFillOps((current) => current.map((fill, i) => i === index ? { ...fill, subject } : fill))} />
+            <div id="report-colour" className="report-anchor">
+              <PaletteStory entries={paletteUsage(strokes)} />
+              {fillOps.length > 0 && <div className="fill-colours"><span>Also used in fills (area not measured):</span>{Array.from(new Set(fillOps.map((f) => f.color))).map((colour) => <span key={colour}><i style={{ background: colour, display: 'inline-block', verticalAlign: 'middle' }} /> {colour}</span>)}</div>}
+            </div>
+            <div id="report-process" className="report-anchor"><ProcessStory strokes={strokes} fills={fillOps} startTime={startTime} timeUsedSeconds={report.timeUsedSeconds} undoCount={undoCount} onRelabelMany={labelSelectedMarks} onRestoreLabels={restoreMarkLabels} onRelabel={(id, subject) => setStrokes((current) => current.map((stroke) => stroke.id === id ? { ...stroke, subject } : stroke))} onRelabelFill={(index, subject) => setFillOps((current) => current.map((fill, i) => i === index ? { ...fill, subject } : fill))} /></div>
             <DiscoveryActivities onStateChange={captureActivityState} sessionId={String(startTime)} colors={Array.from(new Set([...paletteUsage(strokes).map((entry) => entry.color), ...fillOps.map((fill) => fill.color.toLowerCase())]))} />
             <section className="paper-card"><h2>The science behind this</h2><p>Person-in-the-Rain drawings are used in some art-therapy and assessment contexts, but interpretations are mixed and should be made by trained professionals alongside other information.</p><details><summary>Read the nine references used in this activity</summary><ol className="reference-list">{references.map((reference) => <li key={reference}>{reference.includes('https://doi.org/') ? <>{reference.split('https://doi.org/')[0]}<a href={`https://doi.org/${reference.split('https://doi.org/')[1]}`} target="_blank" rel="noreferrer">https://doi.org/{reference.split('https://doi.org/')[1]}</a></> : reference}</li>)}</ol></details></section>
             <section className="paper-card disclaimer"><h2>A note about care</h2><p>This is a reflective art activity, not a psychological test or diagnosis. Person-in-the-Rain drawings are a projective technique; research on their reliability and validity is mixed, and interpretations should only be made by a trained art therapist or psychologist alongside other information. If you are feeling distressed, please reach out to someone you trust or a mental health professional.</p><div className="support-box" style={{ marginTop: 15 }}><div><strong>Need support?</strong><span style={{ color: 'var(--muted)', fontSize: '.82rem' }}>{resources.region} resources</span></div>{resources.support.map((item) => <a key={item.value} className="support-link" href={item.href}>{item.label} · {item.value}</a>)}</div></section>
             <section className="beautify-card"><div><div className="section-kicker">Make a keepsake</div><h2>Give your drawing a gallery finish</h2><p>This optional local framing effect adds a paper border and a gentle colour lift. It is separate from artistic AI restyling and does not redraw your picture.</p></div><button className="primary-button" onClick={beautifyArtwork}><Sparkles size={16} /> {beautifiedDataUrl ? 'Refresh finish' : 'Gallery finish'}</button></section>
-            <section className="report-export-card" aria-labelledby="reflection-pdf-title">
+            <section id="report-keepsake" className="report-export-card report-anchor" aria-labelledby="reflection-pdf-title">
               <div><div className="section-kicker">A report to keep</div><h2 id="reflection-pdf-title">Your personal reflection report</h2><p>Your original and applied styled artwork, measured process, confirmed details and chosen next step. A refined, illustrated PDF—not a diagnosis.</p><small>{restyledArtwork ? `Includes the original + your applied ${STYLES.find((style) => style.id === restyledArtwork.styleId)?.name ?? 'artistic'} version, whichever artwork tab is selected.` : 'To include a styled version, choose a style and select “Use this artwork in report” before downloading.'} Includes personal choices; share thoughtfully.</small></div>
               <button className="primary-button" onClick={() => void exportPdf()} disabled={pdfExporting}><FileText size={18} /> {pdfExporting ? 'Preparing report…' : 'Download reflection report PDF'}</button>
               {pdfError && <p className="report-export-error" role="alert">{pdfError}</p>}

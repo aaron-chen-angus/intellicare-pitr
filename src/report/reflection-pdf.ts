@@ -27,16 +27,25 @@ export type ReflectionPdfInput = {
 const CARE_DISCLAIMER = 'This is a reflective art activity, not a psychological test or diagnosis. Person-in-the-Rain drawings are a projective technique; research on their reliability and validity is mixed, and interpretations should only be made by a trained art therapist or psychologist alongside other information. If you are feeling distressed, please reach out to someone you trust or a mental health professional.'
 
 type RGB = [number, number, number]
+// intelliCARE gallery palette, matching the app (theme.css).
 const C = {
-  ink: [30, 43, 43] as RGB,
-  teal: [30, 75, 73] as RGB,
-  muted: [94, 103, 99] as RGB,
-  brass: [164, 140, 95] as RGB,
-  line: [213, 208, 194] as RGB,
-  paper: [248, 246, 239] as RGB,
-  pale: [235, 239, 233] as RGB,
+  ink: [27, 42, 59] as RGB,
+  teal: [21, 79, 168] as RGB,
+  muted: [82, 101, 122] as RGB,
+  brass: [31, 111, 224] as RGB,
+  line: [214, 226, 238] as RGB,
+  paper: [246, 250, 255] as RGB,
+  pale: [227, 240, 255] as RGB,
   white: [255, 255, 255] as RGB,
 }
+const BRAND = {
+  sky: [191, 228, 255] as RGB,
+  mint: [18, 163, 127] as RGB,
+  gold: [255, 210, 77] as RGB,
+  rose: [255, 122, 138] as RGB,
+  plum: [123, 92, 214] as RGB,
+}
+const APP_TITLE = 'intelliCARE – Person in the Rain Activity'
 const M = 18
 const W = 174
 const BOTTOM = 273
@@ -73,10 +82,10 @@ export async function createReflectionPdf(input: ReflectionPdfInput): Promise<js
   }).join('')
   const unsupportedTitle = Array.from(clean(input.title)).some((character) => !fonts.supports(character.codePointAt(0)!))
   pdf.setProperties({
-    title: input.title || 'My Rain & Me reflection',
+    title: input.title ? `${APP_TITLE} · ${input.title}` : APP_TITLE,
     subject: 'Personal art reflection: recorded drawing process and user-selected choices; not a medical record, assessment, or diagnosis.',
-    author: 'Rain & Me',
-    creator: 'Rain & Me · local reflection export',
+    author: 'intelliCARE',
+    creator: `${APP_TITLE} · local reflection export`,
     keywords: 'personal reflection, original artwork, styled artwork comparison, user choices, non-diagnostic',
   })
   const body = (size = 10, colour = C.ink, bold = false) => {
@@ -122,10 +131,18 @@ export async function createReflectionPdf(input: ReflectionPdfInput): Promise<js
     if (started) pdf.addPage()
     started = true
     rect(0, 0, 210, 297, C.paper)
-    rect(0, 0, 210, 4, C.teal)
-    label('Rain & Me / Personal reflection', M, 17)
-    text(section, 192, 17, 8.5, C.muted, false, 'right')
-    line(M, 24, 192, 24, C.brass, .35)
+    // Brand stripe: blue / mint / gold / rose, as in the app's gallery.
+    rect(0, 0, 130, 3.2, C.brass); rect(130, 0, 30, 3.2, BRAND.mint); rect(160, 0, 28, 3.2, BRAND.gold); rect(188, 0, 22, 3.2, BRAND.rose)
+    pdf.setFillColor(...C.white); pdf.roundedRect(M - 4, 9, W + 8, 12, 6, 6, 'F')
+    pdf.setFillColor(...C.brass); pdf.roundedRect(M - 1, 11.5, 7, 7, 2, 2, 'F')
+    const dots: Array<{ dx: number; dy: number; colour: RGB }> = [
+      { dx: 2.2, dy: 2.3, colour: BRAND.rose }, { dx: 5.4, dy: 2.3, colour: BRAND.gold },
+      { dx: 2.2, dy: 5.5, colour: BRAND.sky }, { dx: 5.4, dy: 5.5, colour: BRAND.mint },
+    ]
+    dots.forEach(({ dx, dy, colour }) => { pdf.setFillColor(...colour); pdf.circle(M - 1 + dx, 11.5 + dy, .75, 'F') })
+    label('intelliCARE / Person in the Rain Activity', M + 9, 16.8)
+    text(section, 192, 16.8, 8.5, C.muted, false, 'right')
+    line(M, 26, 192, 26, C.line, .35)
     heading(title, M, 41)
     return paragraph(subtitle, M, 51, W, 10, C.muted, 4.6, 65) + 8
   }
@@ -163,8 +180,8 @@ export async function createReflectionPdf(input: ReflectionPdfInput): Promise<js
   // 01 — A paired gallery. Original and applied styled images are never substituted.
   page('01 / The artworks', '', '')
   heading('A personal reflection', M, 48, 36)
-  text('YOUR DRAWING, YOUR STORY', M, 61, 9, C.muted, true)
-  const title = input.title || 'My Rain & Me reflection'
+  text('PERSON IN THE RAIN ACTIVITY · YOUR DRAWING, YOUR STORY', M, 61, 9, C.muted, true)
+  const title = input.title || 'My Person in the Rain reflection'
   let titleSize = 18
   while (titleSize > 11 && linesFor(title, W, titleSize, true).length > 3) titleSize -= 1
   const titleEnd = paragraph(title, M, 75, W, titleSize, C.ink, titleSize * .43, 112, true)
@@ -174,9 +191,10 @@ export async function createReflectionPdf(input: ReflectionPdfInput): Promise<js
   const captionH = captionRows * 4.5 + 3
   const frameH = Math.min(143, 249 - artY - captionH)
   if (frameH < 90) throw new Error('The artwork title or style name is too long to leave a readable comparison. Please shorten it and export again; no title or artwork has been clipped.')
+  // Gallery frames: a warm wooden edge and a white mat, as on the app's report wall.
   ;[M, M + 91].forEach((x) => {
-    rect(x, artY, frameW, frameH)
-    pdf.setDrawColor(...C.line); pdf.setLineWidth(.3); pdf.rect(x, artY, frameW, frameH, 'S')
+    pdf.setFillColor(184, 132, 66); pdf.roundedRect(x - 1.2, artY - 1.2, frameW + 2.4, frameH + 2.4, 2, 2, 'F')
+    pdf.setFillColor(...C.white); pdf.roundedRect(x, artY, frameW, frameH, 1.2, 1.2, 'F')
   })
   fitImage(input.originalImage, original, M + 4, artY + 4, frameW - 8, frameH - 8, false)
   if (styled && input.styledArtwork) fitImage(input.styledArtwork.image, styled, M + 95, artY + 4, frameW - 8, frameH - 8, true)
@@ -292,7 +310,7 @@ export async function createReflectionPdf(input: ReflectionPdfInput): Promise<js
   // 03 — Numeric hierarchy, share chart and genuine timestamp lanes.
   y = page('03 / Recorded process', 'How the page took shape', 'Measured from retained marks and timestamps. Time, revisits and colour are not stress or personality indicators.')
   const metricY = y
-  rect(M, metricY - 3, W, 27, C.teal)
+  pdf.setFillColor(...C.teal); pdf.roundedRect(M, metricY - 3, W, 27, 4, 4, 'F')
   const metrics = [
     ['SESSION ELAPSED', seconds(input.timeUsedSeconds)],
     ['PEN ACTIVE', seconds(total)],
@@ -306,7 +324,7 @@ export async function createReflectionPdf(input: ReflectionPdfInput): Promise<js
     body(size, C.white, true)
     while (size > 10 && pdf.getTextWidth(value) > 37) { size--; body(size, C.white, true) }
     text(value, x, metricY + 16, size, C.white, true)
-    if (index) line(x - 3, metricY + 2, x - 3, metricY + 18, [93, 123, 116], .2)
+    if (index) line(x - 3, metricY + 2, x - 3, metricY + 18, [120, 165, 230], .2)
   })
   y = metricY + 32
   label('Measured / share of retained pen-active time', M, y)
@@ -486,11 +504,11 @@ export async function createReflectionPdf(input: ReflectionPdfInput): Promise<js
     pdf.setPage(index)
     line(M, 280, 192, 280, C.brass, .3)
     text('Measured / You described / You chose', M, 286, 7.5, C.muted)
-    const release = input.release ? `Rain & Me · ${clean(input.release)}` : 'Rain & Me · local export'
+    const release = input.release ? `${APP_TITLE} · ${clean(input.release)}` : `${APP_TITLE} · local export`
     const releaseRows = linesFor(release, 145, 7.5)
     // The version marker is not substantive reflection content.
     if (releaseRows.length <= 2) releaseRows.forEach((row, rowIndex) => text(row, M, 290 + rowIndex * 3, 7.5, C.muted))
-    else text('Rain & Me · local reflection export', M, 291, 7.5, C.muted)
+    else text(`${APP_TITLE} · local reflection export`, M, 291, 7.5, C.muted)
     text(`${String(index).padStart(2, '0')} / ${String(pages).padStart(2, '0')}`, 192, 287, 9, C.teal, true, 'right')
   }
   return pdf

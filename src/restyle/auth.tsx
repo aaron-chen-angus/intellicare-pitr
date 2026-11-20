@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import { RESTYLE_MODEL, verifyQuestOnlyConnection } from './client'
 
 const MESSAGE = 'rain-restyle-oauth-return'
@@ -140,5 +140,5 @@ export function RestyleOAuthReturn() {
     setMessage('Connection response returned to the original tab. You can close this window.')
     window.setTimeout(() => { channel?.close(); window.close() }, 150)
   }, [])
-  return <main style={{ background: '#fffdf8', color: '#182a38', padding: 32, minHeight: '100vh' }}><h1>Rain & Me · Restyle</h1><p>{message}</p></main>
+  return <main style={{ background: '#fffdf8', color: '#182a38', padding: 32, minHeight: '100vh' }}><h1>intelliCARE · Restyle</h1><p>{message}</p></main>
 }

@@ -7,7 +7,7 @@ import { APP_RELEASE } from './version'
 import { RestyleOAuthReturn } from './restyle/auth'
 import './scrapbook.css'
 import './scrapbook-report.css'
-import './arcade.css'
+import './theme.css'
 
 const StyleLab = lazy(() => import('./restyle/StyleLab'))
 const RESTYLE_RELEASE = APP_RELEASE
@@ -28,9 +28,9 @@ function Root() {
   if (page === 'oauth') return <RestyleOAuthReturn />
   return <>
     <div className="release-strip">
-      {page === 'restyle' ? 'Artistic restyle studio' : 'PITR reflection studio'}
+      {page === 'restyle' ? 'intelliCARE · Art-style studio' : 'intelliCARE · Person in the Rain Activity'}
       <span>Release {page === 'restyle' ? RESTYLE_RELEASE : APP_RELEASE}</span>
-      {page !== 'restyle' && <a href="#/restyle" style={{ color: 'inherit', textDecoration: 'underline', marginLeft: 12 }}>Try Restyle lab</a>}
+      {page !== 'restyle' && <a href="#/restyle" style={{ textDecoration: 'underline' }}>Open the art-style studio</a>}
     </div>
     {page === 'restyle' ? <Suspense fallback={<p style={{ color: '#172b3a', padding: 32 }}>Opening the style studio…</p>}><StyleLab /></Suspense> : <App />}
   </>

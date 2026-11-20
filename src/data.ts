@@ -1,6 +1,6 @@
 import type { AgeGroup, ToolName } from './types'
 
-export const APP_NAME = 'Rain & Me'
+export const APP_NAME = 'intelliCARE – Person in the Rain Activity'
 export const DRAWING_SECONDS = 5 * 60
 export const CANVAS_WIDTH = 1240
 export const CANVAS_HEIGHT = 1754
@@ -45,7 +45,7 @@ export const ageLabel: Record<AgeGroup, string> = {
 }
 
 export const developingMessages = [
-  'Mixing the colours…',
-  'Listening to the rain…',
-  'Finding the story in your strokes…',
+  'Framing your painting…',
+  'Hanging it on the gallery wall…',
+  'Setting out the reflection cards…',
 ]
