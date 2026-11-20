@@ -1,0 +1,13 @@
+{
+  "release": "2026.11.13-report-2",
+  "entry": "Report artwork Restyle drawing action and four report-visible style choices",
+  "optionalRoute": "#/restyle",
+  "styles": [
+    "Anime",
+    "Realistic",
+    "Watercolour",
+    "Graphic Novel"
+  ],
+  "examples": "style references only; never substituted for a user's generated result",
+  "provider": "Pollinations / flux.2-klein-4b; requires owner configuration and earned Quest-only credits"
+}
