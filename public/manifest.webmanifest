@@ -1,10 +1,10 @@
 {
-  "name": "Rain & Me",
-  "short_name": "Rain & Me",
+  "name": "intelliCARE – Person in the Rain Activity",
+  "short_name": "intelliCARE PITR",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f6f1e9",
-  "theme_color": "#2e8c88",
-  "description": "A gentle reflective drawing activity in the rain.",
+  "background_color": "#e3f4ff",
+  "theme_color": "#bfe4ff",
+  "description": "intelliCARE Person in the Rain Activity: a guided, reflective drawing activity.",
   "icons": []
 }
