@@ -3,9 +3,11 @@ export type AgeGroup = 'child' | 'teen' | 'adult' | 'older'
 export type ToolName = 'pencil' | 'ink' | 'marker' | 'watercolour' | 'crayon' | 'airbrush' | 'calligraphy' | 'highlighter' | 'eraser' | 'fill'
 
 export type Point = { x: number; y: number; t: number; pressure: number }
+export type DrawingSubject = 'unlabelled' | 'person' | 'umbrella' | 'rain' | 'scene'
 
 export type StrokeRecord = {
   id: string
+  subject?: DrawingSubject
   start: number
   end: number
   tool: ToolName
@@ -22,6 +24,8 @@ export type FillOperation = {
   y: number
   color: string
   tolerance: number
+  t?: number
+  subject?: DrawingSubject
 }
 
 export type SessionProfile = {

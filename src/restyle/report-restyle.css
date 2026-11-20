@@ -1,0 +1,289 @@
+/* Preserved functional rules. New scrapbook styling has higher cascade priority. */
+@layer legacy {
+.report-restyle-section {
+  min-width: 0;
+  scroll-margin-top: 24px;
+  font-family: 'Nunito', sans-serif;
+}
+
+.report-restyle-section .report-restyle-card,
+.report-restyle-section .report-restyle-card *,
+.report-restyle-section .report-restyle-card *::before,
+.report-restyle-section .report-restyle-card *::after,
+.report-restyle-section .report-restyle-dialog { box-sizing: border-box; }
+
+.report-restyle-section .report-restyle-card {
+  padding: clamp(20px, 3vw, 30px);
+  border: 1px solid #526573;
+  border-radius: 24px;
+  background: #1a2b3a;
+  color: #fffdf8;
+  box-shadow: 0 14px 35px #12223112;
+  container-type: inline-size;
+}
+
+.report-restyle-card .report-restyle-heading-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.report-restyle-card .report-restyle-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 11px;
+  color: #c4dfd5;
+  font-size: .64rem;
+  font-weight: 800;
+  line-height: 1.5;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.report-restyle-card h2 {
+  margin: 0;
+  color: #fffdf8;
+  font: 500 clamp(1.65rem, 2.8vw, 2.25rem)/1.15 'Fraunces', Georgia, serif;
+  letter-spacing: -.035em;
+}
+
+.report-restyle-card .report-restyle-intro {
+  margin: 12px 0 0;
+  color: #e0e7e7;
+  font-size: .83rem;
+  line-height: 1.6;
+}
+
+.report-restyle-card .report-restyle-count {
+  flex-shrink: 0;
+  padding: 6px 9px;
+  border: 1px solid #81928f;
+  border-radius: 999px;
+  background: #1a2b3a;
+  color: #e5eee9;
+  font-size: .62rem;
+  font-weight: 800;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.report-restyle-card .report-restyle-examples {
+  margin: 23px 0 12px;
+  color: #d8e3e2;
+  font-size: .7rem;
+  line-height: 1.6;
+}
+
+.report-restyle-card .report-restyle-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.report-restyle-card .report-restyle-style {
+  display: block;
+  position: relative;
+  min-width: 0;
+  min-height: 44px;
+  width: 100%;
+  padding: 5px;
+  border: 2px solid #536775;
+  border-radius: 12px;
+  background: #223746;
+  color: #fffdf8;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color .18s ease, transform .18s ease;
+}
+
+.report-restyle-card .report-restyle-style:hover {
+  border-color: #bfd9cf;
+  transform: translateY(-3px);
+}
+
+.report-restyle-card .report-restyle-style.is-selected {
+  border-color: #c7e5d7;
+  outline: 2px solid #c7e5d7;
+  outline-offset: 2px;
+  background: #2b4552;
+  color: #fffdf8;
+}
+
+.report-restyle-card .report-restyle-style:focus-visible {
+  outline: 3px solid #fffdf8;
+  outline-offset: 4px;
+}
+
+.report-restyle-card .report-restyle-thumbnail {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 7px;
+  background: #f5f0e6;
+}
+
+.report-restyle-card .report-restyle-thumbnail img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.report-restyle-card .report-restyle-number {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: #1a2b3a;
+  color: #fffdf8;
+  font-size: .6rem;
+  line-height: 1.4;
+  font-weight: 800;
+}
+
+.report-restyle-card .report-restyle-selected {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #fffdf8;
+  border-radius: 50%;
+  background: #1a2b3a;
+  color: #fffdf8;
+}
+
+.report-restyle-card .report-restyle-style-copy {
+  display: grid;
+  gap: 7px;
+  padding: 12px 6px 9px;
+}
+
+.report-restyle-card .report-restyle-style-title {
+  display: block;
+  color: #fffdf8;
+  font: 500 clamp(.78rem, 1.1vw, 1rem)/1.2 'Fraunces', Georgia, serif;
+  letter-spacing: -.025em;
+  overflow-wrap: normal;
+}
+
+.report-restyle-card .report-restyle-style-title svg { display: none; }
+
+.report-restyle-card .report-restyle-style-tag {
+  color: #d1e1df;
+  font-size: .6rem;
+  line-height: 1.5;
+}
+
+.report-restyle-section .report-restyle-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.report-restyle-section .report-restyle-dialog {
+  width: min(1440px, 96vw);
+  max-width: min(1440px, 96vw);
+  max-height: 94vh;
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid #647b82;
+  border-radius: 18px;
+  background: #fffdf8;
+  color: #1a2b3a;
+  box-shadow: 0 28px 100px #00000066;
+  color-scheme: light;
+}
+
+.report-restyle-section .report-restyle-dialog::backdrop {
+  background: #101e29df;
+  backdrop-filter: blur(5px);
+}
+
+.report-restyle-dialog .report-restyle-loading {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  min-height: 320px;
+  padding: 45px 24px;
+  background: #fffdf8;
+  color: #1a2b3a;
+  text-align: center;
+}
+
+.report-restyle-dialog .report-restyle-loading h2 {
+  margin: 0;
+  color: #1a2b3a;
+  font: 500 1.7rem/1.2 'Fraunces', Georgia, serif;
+}
+
+.report-restyle-dialog .report-restyle-loading p {
+  margin: 0;
+  color: #374e59;
+  font-size: .85rem;
+  line-height: 1.6;
+}
+
+.report-restyle-dialog .report-restyle-loading button {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 10px 18px;
+  border: 1px solid #1a2b3a;
+  border-radius: 8px;
+  background: #1a2b3a;
+  color: #fffdf8;
+  font: inherit;
+  cursor: pointer;
+}
+
+.report-restyle-dialog .report-restyle-loading button:focus-visible {
+  outline: 3px solid #21665f;
+  outline-offset: 4px;
+}
+
+@container (max-width: 520px) {
+  .report-restyle-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+
+@media (max-width: 740px) {
+  .report-restyle-card .report-restyle-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .report-restyle-card .report-restyle-style-title { font-size: 1.1rem; }
+  .report-restyle-card .report-restyle-style-tag { font-size: .66rem; }
+}
+
+@media (max-width: 420px) {
+  .report-restyle-card .report-restyle-count { display: none; }
+  .report-restyle-section .report-restyle-card { padding: 20px 16px; }
+  .report-restyle-card .report-restyle-grid { gap: 12px; }
+  .report-restyle-card .report-restyle-style-title { font-size: 1rem; }
+  .report-restyle-card .report-restyle-eyebrow { letter-spacing: .06em; font-size: .59rem; }
+  .report-restyle-section .report-restyle-dialog { border-radius: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .report-restyle-card .report-restyle-style { transition: none; }
+  .report-restyle-card .report-restyle-style:hover { transform: none; }
+}
+
+@media print {
+  .report-restyle-section { display: none !important; }
+}
+}

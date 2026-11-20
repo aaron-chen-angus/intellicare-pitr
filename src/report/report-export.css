@@ -1,0 +1,8 @@
+.report-export-card { margin-top: 24px; padding: 26px; border: 1px solid var(--sb-line); background: var(--sb-paper); color: var(--sb-ink); display: flex; align-items: center; flex-wrap: wrap; gap: 22px; }
+.report-export-card>div { flex: 1 1 330px; }
+.report-export-card h2 { font: 400 1.6rem/1.3 var(--sb-heading); margin: 8px 0 12px; color: inherit; }
+.report-export-card p { color: inherit; font-size: .84rem; line-height: 1.7; }
+.report-export-card small { font-size: .73rem; line-height: 1.5; display: block; }
+.report-export-card button { min-height: 48px; max-width: 100%; white-space: normal; }
+.report-export-card .report-export-error { width: 100%; color: var(--sb-accent); font-weight: 600; }
+@media(max-width:720px) { .report-export-card { padding: 20px; } .report-export-card button { width: 100%; } }

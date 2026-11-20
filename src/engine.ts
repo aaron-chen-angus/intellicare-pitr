@@ -60,10 +60,10 @@ export const makeStroke = (tool: ToolName, color: string, size: number, opacity:
     opacity,
     points,
     bbox: {
-      x: Math.min(...xs, 0),
-      y: Math.min(...ys, 0),
-      width: Math.max(...xs, 0) - Math.min(...xs, 0),
-      height: Math.max(...ys, 0) - Math.min(...ys, 0),
+      x: xs.length ? Math.min(...xs) : 0,
+      y: ys.length ? Math.min(...ys) : 0,
+      width: xs.length ? Math.max(...xs) - Math.min(...xs) : 0,
+      height: ys.length ? Math.max(...ys) - Math.min(...ys) : 0,
     },
     averagePressure: pressures.length ? pressures.reduce((sum, pressure) => sum + pressure, 0) / pressures.length : 0.5,
   }
