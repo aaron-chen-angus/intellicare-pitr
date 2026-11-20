@@ -177,6 +177,10 @@ h1, h2, h3, h4 { color: var(--ic-ink); }
 .char .arm-paint { animation: ic-paint 2.6s ease-in-out infinite; }
 .char .arm-mix { animation: ic-mix 2.2s ease-in-out infinite; }
 .delvina-avatar { overflow: visible; }
+/* Delvina's hand is raised by her hair, so her wave pivots at the shoulder. */
+.delvina .arm-wave { transform-origin: 8% 96%; }
+.delvina.wave .arm-wave { animation: ic-wave-up .32s ease-in-out 6 alternate; }
+@keyframes ic-wave-up { from { transform: rotate(-6deg); } to { transform: rotate(12deg); } }
 @keyframes ic-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 @keyframes ic-blink { 0%, 94%, 100% { opacity: 0; } 95%, 98% { opacity: 1; } }
 @keyframes ic-wave { from { transform: rotate(0); } to { transform: rotate(-38deg); } }
