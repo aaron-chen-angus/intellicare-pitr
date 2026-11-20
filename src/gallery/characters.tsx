@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 
 /**
  * Original illustrated cast (vector, life-sim style). Decoration and guidance only:
@@ -147,6 +147,30 @@ export function DelvinaArt({ uid, waving }: { uid: string; waving?: boolean }) {
   const hair = `dv-hair-${uid}`
   const top = `dv-top-${uid}`
   const skinTone = '#f8dcc4'
+  const arm = useRef<SVGGElement>(null)
+
+  // Wave by setting the SVG rotate() attribute on the arm group. SVG rotate()
+  // always turns around the group's own origin (her shoulder joint), so the
+  // arm can never detach, in any browser.
+  useEffect(() => {
+    const element = arm.current
+    if (!waving || !element) return
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
+    const duration = 1600
+    const start = performance.now()
+    let frame = 0
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / duration)
+      const envelope = Math.sin(Math.PI * t)
+      const angle = 13 * envelope * Math.sin(t * Math.PI * 6)
+      element.setAttribute('transform', `rotate(${angle.toFixed(2)})`)
+      if (t < 1) frame = requestAnimationFrame(step)
+      else element.setAttribute('transform', 'rotate(0)')
+    }
+    frame = requestAnimationFrame(step)
+    return () => { cancelAnimationFrame(frame); element.setAttribute('transform', 'rotate(0)') }
+  }, [waving])
+
   return (
     <g className={`char delvina${waving ? ' wave' : ''}`}>
       <defs>
@@ -184,10 +208,14 @@ export function DelvinaArt({ uid, waving }: { uid: string; waving?: boolean }) {
         <path d="M40 96 L80 96 L77 105 L43 105 Z" fill={`url(#${top})`} />
         <path d="M34 92 Q39 96 44 92 Q49 97 54 92 Q59 97 64 92 Q69 97 74 92 Q79 96 86 92 L87 99 Q81 103 75 99 Q70 104 64 99 Q59 104 54 99 Q49 104 44 99 Q39 103 33 99 Z" fill="#ffffff" stroke="#dfe4ec" strokeWidth=".8" />
         {/* raised right hand near her hair (waves when tapped) */}
-        <g className="arm-wave">
-          <path d="M83 95 Q97 88 92 68" stroke={`url(#${skin})`} strokeWidth="9" strokeLinecap="round" fill="none" />
-          <ellipse cx="91.5" cy="64" rx="5" ry="6" fill={`url(#${skin})`} />
-          <rect x="88" y="73" width="8" height="3" rx="1.5" fill="#2b3446" transform="rotate(-14 92 74.5)" />
+        {/* The arm is drawn from a fixed shoulder joint at (83, 95), so the wave
+            rotates around the shoulder and the arm always stays attached. */}
+        <g transform="translate(83 95)">
+          <g ref={arm} className="dv-arm" transform="rotate(0)">
+            <path d="M0 0 Q14 -7 9 -27" stroke={`url(#${skin})`} strokeWidth="9" strokeLinecap="round" fill="none" />
+            <ellipse cx="8.5" cy="-31" rx="5" ry="6" fill={`url(#${skin})`} />
+            <rect x="5" y="-22" width="8" height="3" rx="1.5" fill="#2b3446" transform="rotate(-14 9 -20.5)" />
+          </g>
         </g>
         {/* face */}
         <ellipse cx="60" cy="54" rx="20" ry="22" fill={`url(#${skin})`} />
