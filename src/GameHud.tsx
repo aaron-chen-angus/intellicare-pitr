@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
+import { memo, useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
 import {
   Brush,
   CloudRain,
@@ -97,7 +97,9 @@ function useProgress(strokes: StrokeRecord[], fills: FillOperation[]) {
   }, [strokes, fills])
 }
 
-export function GameHud({ strokes, fills }: { strokes: StrokeRecord[]; fills: FillOperation[] }) {
+// memo: the studio re-renders on every pointer move; the HUD only needs to
+// update when a stroke or fill is actually added or removed.
+export const GameHud = memo(function GameHud({ strokes, fills }: { strokes: StrokeRecord[]; fills: FillOperation[] }) {
   const { stats, earned, xp, level, into } = useProgress(strokes, fills)
   const seen = useRef<Set<string> | null>(null)
   const [popup, setPopup] = useState<Achievement | null>(null)
@@ -138,7 +140,7 @@ export function GameHud({ strokes, fills }: { strokes: StrokeRecord[]; fills: Fi
       {popup && <div className="hud-popup" role="status"><Trophy size={20} /><div><small>Achievement unlocked</small><strong>{popup.title}</strong></div></div>}
     </section>
   )
-}
+})
 
 export function ReportRewards({ strokes, fills, timeUsedSeconds }: { strokes: StrokeRecord[]; fills: FillOperation[]; timeUsedSeconds: number }) {
   const { stats, earned, xp, level, into } = useProgress(strokes, fills)

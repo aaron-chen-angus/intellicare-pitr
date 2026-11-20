@@ -222,7 +222,7 @@ h1, h2, h3, .wordmark { letter-spacing: -.01em; }
 .studio-topbar .wordmark { color: #f6efdd; }
 .studio-topbar .icon-button { color: #f6efdd; background: #ffffff14; border-color: #ffffff30; box-shadow: 0 3px 0 #0006; }
 .studio-topbar .icon-button:hover { background: #ffffff26; }
-.timer { font-size: clamp(2.2rem, 4vw, 3rem); text-shadow: 0 0 18px currentColor; }
+.timer { font-size: clamp(2.2rem, 4vw, 3rem); }
 .timer-meta { color: #a9c7bf; }
 .timer-bar { height: 9px; border-radius: 999px; background: #ffffff1c; box-shadow: inset 0 1px 3px #0008; overflow: hidden; }
 .timer-bar span { border-radius: 999px; box-shadow: 0 0 12px currentColor, inset 0 1px 0 #fff6; }
@@ -236,11 +236,15 @@ h1, h2, h3, .wordmark { letter-spacing: -.01em; }
 .tool-divider { background: #ffffff26; }
 .canvas-zone { position: relative; }
 @media (min-width: 721px) { .paper-shell { width: min(100%, calc((100dvh - 305px) / 1.414), 640px); } }
-.focus-ribbon { border: 1px solid var(--sb-line); border-radius: 16px; background: color-mix(in srgb, var(--sb-paper) 82%, transparent); backdrop-filter: blur(10px); box-shadow: var(--sb-paper-shadow); }
+.focus-ribbon { border: 1px solid var(--sb-line); border-radius: 16px; background: var(--sb-paper); box-shadow: var(--sb-paper-shadow); }
 .focus-ribbon select { border-width: 2px; border-radius: 12px; }
-.paper-shell { border-radius: 8px; background: linear-gradient(145deg, #f7dc92, #cf9230 45%, #f3d27c 70%, #b98524); box-shadow: 0 0 0 1px #8a5a0c, 0 26px 60px #1b2a2e55, 0 0 60px #e8b65033; }
-.canvas-holder { border-radius: 2px; box-shadow: inset 0 0 0 1px #8a5a0c55, inset 0 6px 18px #0002; }
-.brush-cursor { border: 1.5px solid #fff; box-shadow: 0 0 0 1px #000a, inset 0 0 0 1px #0006; }
+/* Drawing performance: the canvas area gets no clipping radius, inset shadows,
+   blurs or glows. Those force the browser to repaint/composite the large
+   canvas on every pointer move. The gold frame is a flat gradient only. */
+.paper-shell { border-radius: 6px; background: linear-gradient(145deg, #f7dc92, #cf9230 45%, #f3d27c 70%, #b98524); box-shadow: 0 0 0 1px #8a5a0c, 0 14px 30px #1b2a2e40; }
+.canvas-holder { border-radius: 0; box-shadow: none; }
+.brush-cursor { border: 1.5px solid #fff; outline: 1px solid #000a; box-shadow: none; }
+.studio-shell :is(.focus-ribbon, .controls-panel, .game-hud) { backdrop-filter: none; }
 .controls-panel { padding: 20px; }
 .panel-heading h2 { font-size: 1.7rem; }
 .tool-summary { padding: 10px 12px; border-radius: 14px; background: color-mix(in srgb, var(--sb-base) 60%, transparent); }
